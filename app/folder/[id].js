@@ -29,8 +29,6 @@ import {
   FONT_WEIGHT,
 } from '../../constants/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 /**
  * Folder Detail Screen - Displays files within a selected folder.
  * Shows a list of audio/video files with play functionality.

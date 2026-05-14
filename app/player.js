@@ -6,14 +6,11 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import {
-  ArrowLeft,
   Play,
   Pause,
   SkipBack,
@@ -36,8 +33,9 @@ import {
   setVolume,
   toggleShuffle,
   cycleRepeatMode,
+  setCurrentTrack,
+  play,
 } from '../store/playerSlice';
-import { setCurrentTrack, play } from '../store/playerSlice';
 import { nextInQueue, previousInQueue } from '../store/librarySlice';
 import GlassButton from '../components/GlassButton';
 import {

@@ -4,18 +4,15 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Play, Pause, SkipForward, X, Music } from 'lucide-react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
-import { togglePlayPause, resetPlayer } from '../store/playerSlice';
+import { togglePlayPause, resetPlayer, setCurrentTrack, play } from '../store/playerSlice';
 import { nextInQueue } from '../store/librarySlice';
 import { getTheme, SPACING, RADIUS, FONT_SIZE, FONT_WEIGHT } from '../constants/theme';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
  * MiniPlayer - Sticky floating component pinned above bottom navigation.
@@ -29,6 +26,7 @@ export default function MiniPlayer() {
   const { currentTrack, isPlaying, playbackProgress, duration } = useSelector(
     (state) => state.player
   );
+  const { queue, queueIndex } = useSelector((state) => state.library);
   const theme = getTheme(mode);
 
   // Don't render if no track is active
@@ -46,6 +44,11 @@ export default function MiniPlayer() {
 
   const handleSkip = () => {
     dispatch(nextInQueue());
+    const nextTrack = queue[queueIndex + 1];
+    if (nextTrack) {
+      dispatch(setCurrentTrack({ ...nextTrack, folder: currentTrack?.folder }));
+      dispatch(play());
+    }
   };
 
   const handleDismiss = () => {
@@ -150,9 +153,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 100,
+    zIndex: 1000,
     paddingHorizontal: SPACING.sm,
-    paddingBottom: SPACING.xs,
+    paddingBottom: SPACING.sm,
   },
   touchArea: {
     borderRadius: RADIUS.lg,

@@ -32,8 +32,6 @@ import {
   FONT_WEIGHT,
 } from '../constants/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 /**
  * Folder Browser Screen - Main entry point of the app.
  * Displays a grid of folder cards parsed from local media.
