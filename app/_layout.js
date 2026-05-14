@@ -14,7 +14,6 @@ import { getTheme } from '../constants/theme';
 function InnerLayout() {
   const mode = useSelector((state) => state.theme.mode);
   const theme = getTheme(mode);
-  const currentTrack = useSelector((state) => state.player.currentTrack);
 
   return (
     <View style={[styles.root, { backgroundColor: theme.background }]}>
@@ -26,12 +25,8 @@ function InnerLayout() {
           animation: 'slide_from_right',
         }}
       />
-      {/* Sticky Mini-Player above bottom area */}
-      {currentTrack && (
-        <View style={styles.miniPlayerWrapper}>
-          <MiniPlayer />
-        </View>
-      )}
+      {/* Sticky Mini-Player - component handles its own visibility */}
+      <MiniPlayer />
     </View>
   );
 }
@@ -53,12 +48,5 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  miniPlayerWrapper: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
   },
 });

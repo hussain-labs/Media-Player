@@ -4,24 +4,16 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Play, Pause, SkipForward, X, Music } from 'lucide-react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'expo-router';
-import { togglePlayPause, resetPlayer } from '../store/playerSlice';
+import { togglePlayPause, resetPlayer, setCurrentTrack, play } from '../store/playerSlice';
 import { nextInQueue } from '../store/librarySlice';
 import { getTheme, SPACING, RADIUS, FONT_SIZE, FONT_WEIGHT } from '../constants/theme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-/**
- * MiniPlayer - Sticky floating component pinned above bottom navigation.
- * Appears when a track is loaded. Shows current track info with playback controls.
- * Supports tap to expand (navigates to full player) and dismiss.
- */
 export default function MiniPlayer() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -29,9 +21,9 @@ export default function MiniPlayer() {
   const { currentTrack, isPlaying, playbackProgress, duration } = useSelector(
     (state) => state.player
   );
+  const { queue, queueIndex } = useSelector((state) => state.library);
   const theme = getTheme(mode);
 
-  // Don't render if no track is active
   if (!currentTrack) return null;
 
   const progress = duration > 0 ? playbackProgress / duration : 0;
@@ -46,6 +38,11 @@ export default function MiniPlayer() {
 
   const handleSkip = () => {
     dispatch(nextInQueue());
+    const nextTrack = queue[queueIndex + 1];
+    if (nextTrack) {
+      dispatch(setCurrentTrack({ ...nextTrack, folder: currentTrack?.folder }));
+      dispatch(play());
+    }
   };
 
   const handleDismiss = () => {
@@ -73,7 +70,6 @@ export default function MiniPlayer() {
               },
             ]}
           >
-            {/* Progress bar at top */}
             <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
               <LinearGradient
                 colors={[theme.gradientStart, theme.gradientEnd]}
@@ -84,12 +80,10 @@ export default function MiniPlayer() {
             </View>
 
             <View style={styles.content}>
-              {/* Album art placeholder */}
               <View style={[styles.artContainer, { backgroundColor: theme.accent + '20' }]}>
                 <Music size={18} color={theme.accent} strokeWidth={2} />
               </View>
 
-              {/* Track info */}
               <View style={styles.trackInfo}>
                 <Text
                   style={[styles.trackName, { color: theme.textPrimary }]}
@@ -106,7 +100,6 @@ export default function MiniPlayer() {
                 </Text>
               </View>
 
-              {/* Controls */}
               <View style={styles.controls}>
                 <TouchableOpacity
                   onPress={handlePlayPause}
@@ -150,9 +143,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 100,
+    zIndex: 1000,
     paddingHorizontal: SPACING.sm,
-    paddingBottom: SPACING.xs,
+    paddingBottom: SPACING.sm,
   },
   touchArea: {
     borderRadius: RADIUS.lg,
